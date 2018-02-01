@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Inventory from './components/Inventory';
 import Accounts from './components/Accounts';
+import fire from './fire';
 
 class App extends Component {
   render() {
@@ -22,6 +23,8 @@ class App extends Component {
           <Route exact path="/inventory" component={Inventory} />
           <Route exact path="/accounts" component={Accounts} />
         </main>
+        
+        <h1>Test</h1>
       </div>
     );
   }
