@@ -20,24 +20,26 @@ class Inventory extends Component {
         })
     }
     
+    
     addCigar(e){
         e.preventDefault(); // <- prevent form submit from reloading the page
         /* Send the message to Firebase */
-        fire.database().ref('cigars').push( this.inputEl.value );
-        this.inputEl.value = ''; // <- clear the input
+        fire.database().ref('cigars').push( this.newCigar.value );
+        this.newCigar.value = ''; // <- clear the input
     }
     
     render() {
         return ( 
             <section>
                 <form onSubmit={this.addCigar.bind(this)}>
-                <input type="text" ref={ el => this.inputEl = el }/>
-                <input type="submit"/>
-                    <ul>
-                    { /* Render the list of cigars */
-                        this.state.cigars.map( cigar => <li key={cigar.id}>{cigar.text}</li> )
-                    }
-                </ul>
+                    <input type="text" ref={ x => this.newCigar = x }/>
+                    <input type="text" ref={ y => this.newCigar = y }/>
+                    <input type="submit"/>
+                        <ul>
+                        { /* Render the list of cigars */
+                            this.state.cigars.map( cigar => <li key={cigar.id}>{cigar.text}</li> )
+                        }
+                    </ul>
                 </form>
                 
 
