@@ -3,7 +3,7 @@ import { Route, Link } from 'react-router-dom';
 import './App.css';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
-import Inventory from './components/Inventory';
+import Inventory from './components/Inventory/Inventory';
 import Accounts from './components/Accounts';
 import Assets from './components/Assets';
 import Routes from './components/Routes';
