@@ -5,7 +5,8 @@ class Inventory extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            cigars: []
+            cigars: [],
+
         };
         
         this.addCigar = this.addCigar.bind(this);
@@ -16,20 +17,23 @@ class Inventory extends Component {
         let cigarDB = fire.database().ref('cigars').orderByKey();
         
         cigarDB.on('child_added', snapshot => {
-            /* Update React state when cigar is added at Firebase Database */
-            let cigar = { text: snapshot.val(), id: snapshot.key };
-            this.setState({ cigars: [cigar].concat(this.state.cigars) });
-        })
-        
+            // Update React state when cigar is added at Firebase Database
+            let cigar = { data: snapshot.val(), id: snapshot.key };
+            console.log(cigar.data);
+            this.setState({ cigars: this.state.cigars.concat(cigar) });
+        }) 
     }
     
     addCigar(e){
-        
         //Prevent page refresh when new product added
         e.preventDefault();
-        console.log("Here:" + this.name.value);
         
-        fire.database().ref('cigars').push( this.name.value );
+        var newProduct = {
+            name: this.name.value,
+            cost: this.cost.value
+        }
+        
+        fire.database().ref('cigars').push( newProduct );
     }
     
     render() {
@@ -39,13 +43,15 @@ class Inventory extends Component {
                 
                    <label>Cigar Name:</label> 
                    <input type='text' ref={newName => this.name = newName}/>
+                    <label>Cost:</label> 
+                   <input type='number' ref={newCost => this.cost = newCost}/>
                    <input type='submit'/>
                    
                 </form>
 
                 <ol>
                     {
-                        this.state.cigars.map( cigar => <li key={cigar.id}>{cigar.text}</li>)    
+                    this.state.cigars.map( cigar => <li key={cigar.id}>{cigar.data.name}{cigar.data.cost}</li>)       
                         
                     }
                 </ol>
