@@ -4,57 +4,77 @@ import fire from './fire';
 class Inventory extends Component { 
     constructor(props) {
         super(props);
+        
+       
+        
         this.state = {
-            cigars: [],
-
+            products: [],
         };
         
-        this.addCigar = this.addCigar.bind(this);
+        this.addProduct = this.addProduct.bind(this);
     }
     
     componentWillMount(){
-        // Create reference to cigar db
-        let cigarDB = fire.database().ref('cigars').orderByKey();
+        // Create reference to product db
+        let inventory = fire.database().ref('inventory').orderByKey();
         
-        cigarDB.on('child_added', snapshot => {
-            // Update React state when cigar is added at Firebase Database
-            let cigar = { data: snapshot.val(), id: snapshot.key };
-            console.log(cigar.data);
-            this.setState({ cigars: this.state.cigars.concat(cigar) });
+        inventory.on('child_added', snapshot => {
+            // Update React state when product is added at Firebase Database
+            let product = { data: snapshot.val(), id: snapshot.key };
+            console.log(product.data);
+            this.setState({ products: this.state.products.concat(product) });
         }) 
     }
     
-    addCigar(e){
+    addProduct(e){
         //Prevent page refresh when new product added
         e.preventDefault();
         
         var newProduct = {
             name: this.name.value,
-            cost: this.cost.value
+            lastCost: this.lastCost.value /*,
+            unitsPerCase: this.unitsPerCase.value,
+            critical: this.critical.value,
+            warehouseQty: this.warehouseQty.value,
+            inStoreQty: this.inStoreQty.value,
+            inTruckQty: this.inTruckQty.value,*/
+            
         }
         
-        fire.database().ref('cigars').push( newProduct );
+        fire.database().ref('inventory').push( newProduct );
+        
+        document.getElementById("newProductForm").reset();
     }
     
     render() {
         return ( 
             <section>
-                <form onSubmit={this.addCigar.bind(this)}>
-                
-                   <label>Cigar Name:</label> 
-                   <input type='text' ref={newName => this.name = newName}/>
-                    <label>Cost:</label> 
-                   <input type='number' ref={newCost => this.cost = newCost}/>
-                   <input type='submit'/>
-                   
+                <form id="newProductForm" onSubmit={this.addProduct.bind(this)}>
+                    Product Name: <input type='text' ref={name => this.name = name}/> <br/>
+                    Last Cost:<input type='number' ref={lastCost => this.lastCost = lastCost}/> <br/>
+                    <input type='submit'/>
                 </form>
 
-                <ol>
-                    {
-                    this.state.cigars.map( cigar => <li key={cigar.id}>{cigar.data.name}{cigar.data.cost}</li>)       
-                        
-                    }
-                </ol>
+                <table id='inventory'>
+                    <colgroup>
+                        <col id='product-name'/>
+                        <col id='cost'/>
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <th>Product</th>
+                            <th>Cost</th>
+                        </tr>
+                        {
+                            this.state.products.map( product => 
+                                <tr className='product-name' key={product.id}>
+                                    <td>{product.data.name}</td>
+                                    <td>{product.data.lastCost}</td>
+                                </tr>
+                            )       
+                        }
+                    </tbody>
+                </table>
             </section>
         );
     }
