@@ -32,6 +32,7 @@ class Inventory extends Component {
     
     componentDidMount(){
         fire.database().ref('inventory').on('child_changed', snapshot => {
+            console.log('change fire');
             // Update React state when product is added at Firebase Database
             let changedProduct = { data: snapshot.val(), id: snapshot.key };
             let newList = [];
@@ -46,6 +47,21 @@ class Inventory extends Component {
             
             this.setState({products: newList});
         });
+        
+        fire.database().ref('inventory').on('child_removed', snapshot => {
+            console.log('removed fire');
+            // Update React state when product is added at Firebase Database
+            const removedProduct = this.state.selectedProduct.id;
+            let newList = [];
+            
+            this.state.products.forEach( (product) => {
+                if(product.id !== removedProduct){
+                    newList.push(product);
+                }
+            });
+            
+            this.setState({products: newList, selectedProduct: {} });
+        });
     }
     addProduct(e){
         //Prevent page refresh when new product added
@@ -59,9 +75,6 @@ class Inventory extends Component {
             warehouseQty: this.warehouseQty.value,
             inStoreQty: this.inStoreQty.value,
             inTruckQty: this.inTruckQty.value,
-            avgCost: this.avgCost.value,
-            avgProfit: this.avgProfit.value
-            
         };
         
         fire.database().ref('inventory').push( newProduct );
@@ -96,9 +109,22 @@ class Inventory extends Component {
 
     }
     
+    deleteProduct(e){
+            //Prevent page refresh when new product added
+        e.preventDefault();
+        
+        fire.database().ref('inventory/' + this.state.selectedProduct.id).remove();
+        
+        
+        document.getElementById("deleteProductForm").reset(); 
+        this.setState({ showDeleteForm: false }); 
+
+    }
+    
     render() {
         const{showAddForm} = this.state;
         const{showEditForm} = this.state;
+        const{showDeleteForm} = this.state;
         
         return ( 
             <section>
@@ -133,6 +159,15 @@ class Inventory extends Component {
                     In Store Qty:<input type='number' placeholder={this.state.selectedProduct.data.inStoreQty} ref={inStoreQty => this.inStoreQty = inStoreQty}/> <br/>
                     Truck Qty:<input type='number' placeholder={this.state.selectedProduct.data.inTruckQty} ref={inTruckQty => this.inTruckQty = inTruckQty}/> <br/>
                     <input type='submit'/>
+                </form>
+                
+                : null
+                }
+                
+                { showDeleteForm ?
+                
+                 <form id="deleteProductForm" >
+                    <button  onClick={this.deleteProduct.bind(this)} type='button'>Confirm</button>
                 </form>
                 
                 : null
