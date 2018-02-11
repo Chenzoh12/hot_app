@@ -17,8 +17,7 @@ class Inventory extends Component {
             showEditForm: false,
             showDeleteForm: false,
             selectedProduct: {},
-            showEditBtns: false,
-            activeRow: ''
+            showEditBtns: false
         };
         
         //Either bind here on when linking for form this. EX: add.product.bind(this)
@@ -130,7 +129,6 @@ class Inventory extends Component {
         const{showEditForm} = this.state;
         const{showDeleteForm} = this.state;
         const{showEditBtns} = this.state;
-        const{activeRow} = this.state;
         
         return ( 
             <section>

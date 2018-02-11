@@ -9,7 +9,6 @@ import Assets from './components/Assets';
 import Routes from './components/Routes';
 import Trips from './components/Trips';
 import Purchases from './components/Purchases';
-import fire from './components/fire';
 
 class App extends Component {
   
