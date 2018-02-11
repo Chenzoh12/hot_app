@@ -174,121 +174,134 @@ class Inventory extends Component {
                     </div>
                 </div>
                 <div className='table-responsive'>
-                <div className='modal fade' >
-                    <Modal isOpen={showAddForm} style={customStyles}>
-                        
-                         <form className='form-inline' id="newAcctForm" onSubmit={this.addProduct}>
+                    <div className='modal fade' >
+                        <Modal isOpen={showAddForm} style={customStyles}>
                             
-                            <div className='form-group'>
-                                <label>Account Number:</label>
-                                <input className='form-control' type='number' ref={acctNum => this.acctNum = acctNum}/>
-                            </div>
+                             <form className='form' id="newAcctForm" onSubmit={this.addProduct}>
+                                <div className='form-group row'>
+                                    <label>Account Number:</label>
+                                    <input className='form-control' type='number' ref={acctNum => this.acctNum = acctNum}/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label >Account Name: </label>
+                                    <input className='form-control' type='text' ref={name => this.name = name}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Street:</label>    
+                                    <input className='form-control' type='text' ref={street => this.street = street}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>City:</label>
+                                    <input className='form-control' type='text' ref={city => this.city = city}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Zip Code:</label>
+                                    <input className='form-control' type='number' ref={zip => this.zip = zip}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Contact Name:</label>
+                                    <input className='form-control' type='text' ref={contact => this.contact = contact}/> <br/>
+                                </div>
+                                
+                                 <div className='form-group row'>
+                                    <label>Email:</label>
+                                    <input className='form-control' type='email' ref={email => this.email = email}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Frequency:</label>
+                                    <input className='form-control' type='number' ref={freq => this.freq = freq}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <button type='submit' className='btn btn-success'>Submit</button>
+                                    <button className='btn btn-danger'onClick={this.handleCancel}>Cancel</button>
+                                </div>
+                                
+                            </form>
                             
-                            <div className='form-group'>
-                                <label >Account Name: </label>
-                                <input className='form-control' type='text' ref={name => this.name = name}/> <br/>
-                            </div>
                             
-                            <div className='form-group'>
-                                <label>Street:</label>    
-                                <input className='form-control' type='text' ref={street => this.street = street}/> <br/>
-                            </div>
-                            
-                            <div className='form-group'>
-                                <label>City:</label>
-                                <input className='form-control' type='text' ref={city => this.city = city}/> <br/>
-                            </div>
-                            
-                            <div className='form-group'>
-                                <label>Zip Code:</label>
-                                <input className='form-control' type='number' ref={zip => this.zip = zip}/> <br/>
-                            </div>
-                            
-                            <div className='form-group'>
-                                <label>Contact Name:</label>
-                                <input className='form-control' type='text' ref={contact => this.contact = contact}/> <br/>
-                            </div>
-                            
-                             <div className='form-group'>
-                                <label>Email:</label>
-                                <input className='form-control' type='email' ref={email => this.email = email}/> <br/>
-                            </div>
-                            
-                            <div className='form-group'>
-                                <label>Frequency:</label>
-                                <input className='form-control' type='number' ref={freq => this.freq = freq}/> <br/>
-                            </div>
-                            
-                            <div>
-                                <button type='submit' className='btn btn-success'>Submit</button>
-                                <button className='btn btn-danger'onClick={this.handleCancel}>Cancel</button>
-                            </div>
-                            
-                        </form>
-                        
-                        
-                    </Modal>
-                </div>
-                    { showEditForm ?
+                        </Modal>
+                    </div>
                     
-                    <form className='form-inline' id="editAcctForm" onSubmit={this.editProduct}>
-                        
-                        <div className='form-group'>
-                            <label>Account Number:</label>
-                            <input className='form-control' type='number' placeholder={this.state.selectedAcct.data.acctNum} ref={acctNum => this.acctNum = acctNum}/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label >Account Name: </label>
-                            <input className='form-control' type='text' placeholder={this.state.selectedAcct.data.name} ref={name => this.name = name}/> <br/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label>Street:</label>    
-                            <input className='form-control' type='text' placeholder={this.state.selectedAcct.data.street} ref={street => this.street = street}/> <br/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label>City:</label>
-                            <input className='form-control' type='text' placeholder={this.state.selectedAcct.data.city} ref={city => this.city = city}/> <br/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label>Zip Code:</label>
-                            <input className='form-control' type='number' placeholder={this.state.selectedAcct.data.zip} ref={zip => this.zip = zip}/> <br/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label>Contact Name:</label>
-                            <input className='form-control' type='text' placeholder={this.state.selectedAcct.data.contact} ref={contact => this.contact = contact}/> <br/>
-                        </div>
-                        
-                         <div className='form-group'>
-                            <label>Email:</label>
-                            <input className='form-control' type='email' placeholder={this.state.selectedAcct.data.email} ref={email => this.email = email}/> <br/>
-                        </div>
-                        
-                         <div className='form-group'>
-                            <label>Frequency:</label>
-                            <input className='form-control' type='number' placeholder={this.state.selectedAcct.data.freq} ref={freq => this.freq = freq}/> <br/>
-                        </div>
-                        
-                        <div>
-                            <button type='submit' className='btn btn-success'>Submit</button>
-                            <button className='btn btn-danger'onClick={this.handleCancel}>Cancel</button>
-                        </div>
-                        
-                    </form>
+                    {showEditForm ?
+                    <div className='modal fade' >
+                        <Modal isOpen={showEditForm} style={customStyles}>
+                            
+                            <form className='form' id="editAcctForm" onSubmit={this.editProduct}>
+                                
+                                <div className='form-group row'>
+                                    <label>Account Number:</label>
+                                    <input className='form-control' type='number' placeholder={this.state.selectedAcct.data.acctNum} ref={acctNum => this.acctNum = acctNum}/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label >Account Name: </label>
+                                    <input className='form-control' type='text' placeholder={this.state.selectedAcct.data.name} ref={name => this.name = name}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Street:</label>    
+                                    <input className='form-control' type='text' placeholder={this.state.selectedAcct.data.street} ref={street => this.street = street}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>City:</label>
+                                    <input className='form-control' type='text' placeholder={this.state.selectedAcct.data.city} ref={city => this.city = city}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Zip Code:</label>
+                                    <input className='form-control' type='number' placeholder={this.state.selectedAcct.data.zip} ref={zip => this.zip = zip}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Contact Name:</label>
+                                    <input className='form-control' type='text' placeholder={this.state.selectedAcct.data.contact} ref={contact => this.contact = contact}/> <br/>
+                                </div>
+                                
+                                 <div className='form-group row'>
+                                    <label>Email:</label>
+                                    <input className='form-control' type='email' placeholder={this.state.selectedAcct.data.email} ref={email => this.email = email}/> <br/>
+                                </div>
+                                
+                                 <div className='form-group row'>
+                                    <label>Frequency:</label>
+                                    <input className='form-control' type='number' placeholder={this.state.selectedAcct.data.freq} ref={freq => this.freq = freq}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <button type='submit' className='btn btn-success'>Submit</button>
+                                    <button className='btn btn-danger'onClick={this.handleCancel}>Cancel</button>
+                                </div>
+                                
+                            </form>
+                        </Modal>
+                    </div>
                     
                     : null
                     }
+             
                     
                     { showDeleteForm ? 
-                    
-                    <form id="deleteAccountForm"> 
-                        <button className='btn btn-danger' onClick={this.deleteAccount} type='button'>Confirm</button> 
-                        <button className='btn btn-outline-secondary' onClick={this.handleCancel} type='button'>Cancel</button> 
-                    </form> 
+                    <div className='modal fade' >
+                        <Modal isOpen={showDeleteForm} style={customStyles}>
+                            <form id="deleteAccountForm">
+                                <div className='form-group row'>
+                                    <h2>Please confirm that you would like to delete: {this.state.selectedAcct.data.name}</h2>
+                                </div>
+                                <div className='form-group row justify-content-md-center'>
+                                    <button className='btn  btn-danger' onClick={this.deleteAccount} type='button'>Confirm</button> 
+                                    <button className='btn  btn-outline-secondary' onClick={this.handleCancel} type='button'>Cancel</button> 
+                                </div>
+                            </form> 
+                        </Modal>
+                    </div>
                     
                     : null
                         
