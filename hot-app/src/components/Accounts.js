@@ -1,7 +1,19 @@
 import React, { Component } from 'react';
 import fire from './fire';
+import Modal from 'react-modal'
 // eslint-disable-next-line
 import _ from 'lodash';
+
+const customStyles = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)'
+  }
+};
 
 class Inventory extends Component { 
     constructor(props) {
@@ -76,7 +88,8 @@ class Inventory extends Component {
             freq: this.freq.value,
             route: '',
             due: false,
-            notes: []
+            notes: [],
+            selected: false,
         }
         //Validate name is unique
         //Use loop or firebase query on name
@@ -87,9 +100,9 @@ class Inventory extends Component {
         document.getElementById("newAcctForm").reset();
     }
     
-    handleProductClick(account){
+    handleAcctClick(account){
         console.log('selected: ' + account.data.name);
-        this.setState({selectedAcct: account, showEditBtns: true, activeRow: account.id});
+        this.setState({selectedAcct: account, showEditBtns: true});
     }
     
     handleCancel(){
@@ -125,7 +138,7 @@ class Inventory extends Component {
         
         fire.database().ref('accounts/' + this.state.selectedAcct.id).remove();
         
-        this.setState({ showDeleteForm: false }); 
+        this.setState({ showDeleteForm: false, selectedAcct: {}, showEditBtns: false }); 
     }
     
     render() {
@@ -138,79 +151,84 @@ class Inventory extends Component {
         return ( 
             <section>
                 <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                    <h1 className="h2">Inventory</h1>
+                    <h1 className="h2">Account Management</h1>
                     <div className="btn-toolbar mb-2 mb-md-0">
-                        <div className="btn-group mr-2">
-                            <button className='btn btn-outline-success' onClick={() => this.setState({ showAddForm: true })}>Add Product</button>
+                        { showEditBtns ?
+                        <div>
+                            <h4>Selected: <b>{this.state.selectedAcct.data.name}</b></h4>
                         </div>
+                        : null
+                        }
+                    
+                        { showEditBtns ?
+                        <div className="btn-group mr-2">
+                            <button className='btn btn-outline-primary' onClick={() => this.setState({ showEditForm: true })}>Edit {this.state.selectedAcct.data.name}</button>
+                            <button className='btn btn-outline-danger' onClick={() => this.setState({ showDeleteForm: true })}>Delete {this.state.selectedAcct.data.name}</button>
+                        </div>
+                        : null
+                        }
                         
-                            { showEditBtns ?
-                            <div className="btn-group mr-2">
-                                <button className='btn btn-outline-primary' onClick={() => this.setState({ showEditForm: true })}>Edit Product</button>
-                                <button className='btn btn-outline-danger' onClick={() => this.setState({ showDeleteForm: true })}>Delete Product</button>
-                            </div>
-                                : null
-                            }
-                        
+                        <div className="btn-group mr-2">
+                            <button className='btn btn-outline-success' data-toggle="modal" onClick={() => this.setState({ showAddForm: true })}>Add Product</button>
+                        </div>
                     </div>
                 </div>
                 <div className='table-responsive'>
-                    
-                    { showAddForm ?
-                     <form className='form-inline' id="newAcctForm" onSubmit={this.addProduct}>
+                <div className='modal fade' >
+                    <Modal isOpen={showAddForm} style={customStyles}>
                         
-                        <div className='form-group'>
-                            <label>Account Number:</label>
-                            <input className='form-control' type='number' ref={acctNum => this.acctNum = acctNum}/>
-                        </div>
+                         <form className='form-inline' id="newAcctForm" onSubmit={this.addProduct}>
+                            
+                            <div className='form-group'>
+                                <label>Account Number:</label>
+                                <input className='form-control' type='number' ref={acctNum => this.acctNum = acctNum}/>
+                            </div>
+                            
+                            <div className='form-group'>
+                                <label >Account Name: </label>
+                                <input className='form-control' type='text' ref={name => this.name = name}/> <br/>
+                            </div>
+                            
+                            <div className='form-group'>
+                                <label>Street:</label>    
+                                <input className='form-control' type='text' ref={street => this.street = street}/> <br/>
+                            </div>
+                            
+                            <div className='form-group'>
+                                <label>City:</label>
+                                <input className='form-control' type='text' ref={city => this.city = city}/> <br/>
+                            </div>
+                            
+                            <div className='form-group'>
+                                <label>Zip Code:</label>
+                                <input className='form-control' type='number' ref={zip => this.zip = zip}/> <br/>
+                            </div>
+                            
+                            <div className='form-group'>
+                                <label>Contact Name:</label>
+                                <input className='form-control' type='text' ref={contact => this.contact = contact}/> <br/>
+                            </div>
+                            
+                             <div className='form-group'>
+                                <label>Email:</label>
+                                <input className='form-control' type='email' ref={email => this.email = email}/> <br/>
+                            </div>
+                            
+                            <div className='form-group'>
+                                <label>Frequency:</label>
+                                <input className='form-control' type='number' ref={freq => this.freq = freq}/> <br/>
+                            </div>
+                            
+                            <div>
+                                <button type='submit' className='btn btn-success'>Submit</button>
+                                <button className='btn btn-danger'onClick={this.handleCancel}>Cancel</button>
+                            </div>
+                            
+                        </form>
                         
-                        <div className='form-group'>
-                            <label >Account Name: </label>
-                            <input className='form-control' type='text' ref={name => this.name = name}/> <br/>
-                        </div>
                         
-                        <div className='form-group'>
-                            <label>Street:</label>    
-                            <input className='form-control' type='text' ref={street => this.street = street}/> <br/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label>City:</label>
-                            <input className='form-control' type='text' ref={city => this.city = city}/> <br/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label>Zip Code:</label>
-                            <input className='form-control' type='number' ref={zip => this.zip = zip}/> <br/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label>Contact Name:</label>
-                            <input className='form-control' type='text' ref={contact => this.contact = contact}/> <br/>
-                        </div>
-                        
-                         <div className='form-group'>
-                            <label>Email:</label>
-                            <input className='form-control' type='email' ref={email => this.email = email}/> <br/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label>Frequency:</label>
-                            <input className='form-control' type='number' ref={freq => this.freq = freq}/> <br/>
-                        </div>
-                        
-                        <div>
-                            <button type='submit' className='btn btn-success'>Submit</button>
-                            <button className='btn btn-danger'onClick={this.handleCancel}>Cancel</button>
-                        </div>
-                        
-                    </form>
-                    
-                    
-                    // If showAddForm = false hide form
-                    : null
-                    }
-                    
+                    </Modal>
+                </div>
                     { showEditForm ?
                     
                     <form className='form-inline' id="editAcctForm" onSubmit={this.editProduct}>
@@ -292,7 +310,7 @@ class Inventory extends Component {
                             
                             {
                                 this.state.accounts.map( account => 
-                                    <tr className='account-name' style={{cursor: 'pointer'}} key={account.id} onClick={() => this.handleProductClick(account)}>
+                                    <tr className='account-name' style={{cursor: 'pointer'}} key={account.id} onClick={() => this.handleAcctClick(account)}>
                                         <td>{account.id}</td>
                                         <td>{account.data.acctNum}</td>
                                         <td>{account.data.name}</td>
