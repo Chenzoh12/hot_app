@@ -6,21 +6,20 @@ import _ from 'lodash';
 class Inventory extends Component { 
     constructor(props) {
         super(props);
+        
         //Create reference to inventory db
         this.inventory = fire.database().ref('inventory');
         
-    
         //Declare state variables
         this.state = {
             products: [],
             showAddForm: false,
             showEditForm: false,
             showDeleteForm: false,
-            selectedProduct: {}
+            selectedProduct: {},
+            showEditBtns: false,
+            activeRow: ''
         };
-        
-
- 
         
         //Either bind here on when linking for form this. EX: add.product.bind(this)
         this.addProduct = this.addProduct.bind(this);
@@ -29,8 +28,7 @@ class Inventory extends Component {
         this.handleCancel = this.handleCancel.bind(this);
     }
     
-    
-    componentWillMount(){
+    refresh(){
         let invList = [];
         this.inventory.once('value', (snapshot) => {
             snapshot.forEach( (childSnapshot) => {
@@ -38,33 +36,28 @@ class Inventory extends Component {
                 invList.push(product);
             });
             this.setState({products: invList});
-        });
+        });    
+    }
+    
+    
+    componentWillMount(){
+        // this.refresh();
     }
     
     componentDidMount(){
+        this.inventory.on('child_added', snapshot => {
+            console.log('change fired');
+            this.refresh();
+        });
         
         this.inventory.on('child_changed', snapshot => {
             console.log('change fired');
-            
-            let changedProduct = { data: snapshot.val(), id: snapshot.key };
-            console.log(changedProduct);
-            let newList = [];
-            
-            //Push changed product into state
-            this.state.products.forEach( (product) => { product.id === changedProduct.id ? newList.push(changedProduct) : newList.push(product); });
-            this.setState({products: newList});
+            this.refresh();
         });
         
         this.inventory.on('child_removed', snapshot => {
             console.log('removed fire');
-            
-            let removedProduct = this.state.selectedProduct.id;
-            let newList = [];
-            
-            //Remove selected product
-            // eslint-disable-next-line
-            this.state.products.forEach( (product) => {  if(product.id !== removedProduct){  newList.push(product) }});
-            this.setState({products: newList, selectedProduct: {} });
+            this.refresh();            
         });
     }
     
@@ -96,7 +89,7 @@ class Inventory extends Component {
     
     handleProductClick(product){
         console.log('selected: ' + product.data.name);
-        this.setState({selectedProduct: product});
+        this.setState({selectedProduct: product, showEditBtns: true, activeRow: product.id});
     }
     
     handleCancel(){
@@ -104,7 +97,8 @@ class Inventory extends Component {
             showAddForm: false,
             showEditForm: false,
             showDeleteForm: false,
-            selectedProduct: {}
+            selectedProduct: {},
+            showEditBtns: false
         });
     }
     
@@ -114,11 +108,11 @@ class Inventory extends Component {
         fire.database().ref('inventory/' + this.state.selectedProduct.id).update({ 
             name: this.name.value ? this.name.value : this.state.selectedProduct.data.name,
             unitsPerCase: this.unitsPerCase.value ? this.unitsPerCase.value : this.state.selectedProduct.data.unitsPerCase,
-            critical: this.critical.value ? this.critical.value : this.state.selectedProduct.data.unitsPerCase,
-            currentQty: this.currentQty.value
+            critical: this.critical.value ? this.critical.value : this.state.selectedProduct.data.critical,
+            currentQty: this.currentQty.value ? this.currentQty.value : this.state.selectedProduct.data.currentQty,
         });
         
-        this.setState({ showEditForm: false, selectedProduct: {} }); 
+        this.setState({ showEditForm: false, selectedProduct: {}, showEditBtns: false }); 
         document.getElementById("editProductForm").reset(); 
     }
     
@@ -135,6 +129,8 @@ class Inventory extends Component {
         const{showAddForm} = this.state;
         const{showEditForm} = this.state;
         const{showDeleteForm} = this.state;
+        const{showEditBtns} = this.state;
+        const{activeRow} = this.state;
         
         return ( 
             <section>
@@ -143,9 +139,16 @@ class Inventory extends Component {
                     <div className="btn-toolbar mb-2 mb-md-0">
                         <div className="btn-group mr-2">
                             <button className='btn btn-outline-success' onClick={() => this.setState({ showAddForm: true })}>Add Product</button>
-                            <button className='btn btn-outline-primary' onClick={() => this.setState({ showEditForm: true })}>Edit Product</button>
-                            <button className='btn btn-outline-danger' onClick={() => this.setState({ showDeleteForm: true })}>Delete Product</button>
                         </div>
+                        
+                            { showEditBtns ?
+                            <div className="btn-group mr-2">
+                                <button className='btn btn-outline-primary' onClick={() => this.setState({ showEditForm: true })}>Edit Product</button>
+                                <button className='btn btn-outline-danger' onClick={() => this.setState({ showDeleteForm: true })}>Delete Product</button>
+                            </div>
+                                : null
+                            }
+                        
                     </div>
                 </div>
                 <div className='table-responsive'>
@@ -189,12 +192,12 @@ class Inventory extends Component {
                     { showEditForm ?
                     
                      <form id="editProductForm" onSubmit={this.editProduct}>
-                        Product Name: <input type='text' placeholder={this.state.selectedProduct.name} ref={name => this.name = name} /> <br/>
-                        Units/Case: <input type='number' placeholder={this.state.selectedProduct.unitsPerCase}  ref={unitsPerCase => this.unitsPerCase = unitsPerCase}/> <br/>
-                        Critical Level:<input type='number' placeholder={this.state.selectedProduct.critical} ref={critical => this.critical = critical}/> <br/>
-                        Quantity:<input type='number' placeholder={this.state.selectedProduct.currentQty} ref={currentQty => this.currentQty = currentQty}/> <br/>
-                        <input type='submit'/>
-                        <button onClick={this.handleCancel} type='button'>Cancel</button>
+                        Product Name: <input type='text' placeholder={this.state.selectedProduct.data.name} ref={name => this.name = name} /> <br/>
+                        Units/Case: <input type='number' placeholder={this.state.selectedProduct.data.unitsPerCase}  ref={unitsPerCase => this.unitsPerCase = unitsPerCase}/> <br/>
+                        Critical Level:<input type='number' placeholder={this.state.selectedProduct.data.critical} ref={critical => this.critical = critical}/> <br/>
+                        Quantity:<input type='number' placeholder={this.state.selectedProduct.data.currentQty} ref={currentQty => this.currentQty = currentQty}/> <br/>
+                        <button className='btn btn-success'>Submit</button>
+                        <button className='btn btn-danger' onClick={this.handleCancel} type='button'>Cancel</button>
                     </form>
                     
                     : null
@@ -210,7 +213,7 @@ class Inventory extends Component {
                         
                     }
                     
-                    <table className='table table-striped table-sm' id='inventory'>
+                    <table className='table table-striped table-hover table-sm' id='inventory'>
                         <colgroup>
                             <col id='product-id'/>
                             <col id='product-name'/>
@@ -237,7 +240,6 @@ class Inventory extends Component {
                                 <th>Avg. Profit</th>
                             </tr>
                             {
-                                
                                 this.state.products.map( product => 
                                     <tr className='product-name' style={{cursor: 'pointer'}} key={product.id} onClick={() => this.handleProductClick(product)}>
                                         <td>{product.id}</td>
