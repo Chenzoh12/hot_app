@@ -204,7 +204,8 @@ class Inventory extends Component {
                     { showDeleteForm ? 
                     
                     <form id="deleteProductForm"> 
-                        <button onClick={this.deleteProduct} type='button'>Confirm</button> <button onClick={this.handleCancel} type='button'>Cancel</button> 
+                        <button className='btn btn-danger' onClick={this.deleteProduct} type='button'>Confirm</button> 
+                        <button className='btn btn-outline-secondary' onClick={this.handleCancel} type='button'>Cancel</button> 
                     </form> 
                     
                     : null
@@ -237,6 +238,7 @@ class Inventory extends Component {
                                 <th>Avg. Cost</th>
                                 <th>Avg. Profit</th>
                             </tr>
+                            
                             {
                                 this.state.products.map( product => 
                                     <tr className='product-name' style={{cursor: 'pointer'}} key={product.id} onClick={() => this.handleProductClick(product)}>
@@ -253,6 +255,7 @@ class Inventory extends Component {
                                     </tr>
                                 )       
                             }
+                            
                         </tbody>
                     </table>
                 </div>
