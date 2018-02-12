@@ -299,7 +299,7 @@ class Accounts extends Component {
                         <Modal isOpen={showDeleteForm} style={customStyles}>
                             <form className='form' id="deleteAccountForm">
                                 <div className='form-group'>
-                                    <h2 className='text-danger'>Please confirm that you would like to delete: {this.state.selectedName}</h2>
+                                    <h2 className='text-danger'>Please confirm that you would like to delete: [ {this.state.selectedName} ]</h2>
                                 </div>
                                 <div className='form-group row justify-content-md-center'>
                                     <button className='btn  btn-danger' onClick={this.deleteAccount} type='button'>Confirm</button> 
