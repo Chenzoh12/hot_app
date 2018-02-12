@@ -100,6 +100,7 @@ class Inventory extends Component {
     
     handleProductClick(product){
         let name = '';
+        // eslint-disable-next-line
         this.state.selectedProduct ? name = product.data.name : '';
        
         this.setState({selectedProduct: product, selectedName: name, showEditBtns: true});
@@ -258,7 +259,7 @@ class Inventory extends Component {
                         <Modal isOpen={showDeleteForm} style={customStyles}>
                             <form className='form' id="deleteProductForm">
                                 <div className='form-group'>
-                                    <h3 className='text-danger'> PLEASE CONFIRM THAT YOU WOULD LIKE TO DELETE: <b>[ {this.state.selectedProduct.data.name} ]</b></h3>
+                                    <h3 className='text-danger'> PLEASE CONFIRM THAT YOU WOULD LIKE TO DELETE: <b>[ {this.state.selectedName} ]</b></h3>
                                 </div>
                                 <div className='form-group row justify-content-md-center'>
                                     <button className='btn btn-lg btn-danger' onClick={this.deleteProduct} type='button'>Confirm</button> 

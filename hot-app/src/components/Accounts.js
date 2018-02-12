@@ -33,8 +33,8 @@ class Accounts extends Component {
         };
         
         //Either bind here on when linking for form this. EX: add.account.bind(this)
-        this.addProduct = this.addProduct.bind(this);
-        this.editProduct = this.editProduct.bind(this);
+        this.addAccount = this.addAccount.bind(this);
+        this.editAccount = this.editAccount.bind(this);
         this.deleteAccount = this.deleteAccount.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
     }
@@ -72,7 +72,7 @@ class Accounts extends Component {
         });
     }
     
-    addProduct(e){
+    addAccount(e){
         //Prevent page refresh when new account added
         e.preventDefault();
         
@@ -102,6 +102,7 @@ class Accounts extends Component {
     
     handleAcctClick(account){
         let name = ''
+        // eslint-disable-next-line
         this.state.selectedAcct ? name = account.data.name : '';
         
         this.setState({selectedAcct: account,  selectedName: name, showEditBtns: true});
@@ -120,7 +121,7 @@ class Accounts extends Component {
         });
     }
     
-    editProduct(e){
+    editAccount(e){
         e.preventDefault();
         
         fire.database().ref('accounts/' + this.state.selectedAcct.id).update({
@@ -182,7 +183,7 @@ class Accounts extends Component {
                     <div className='modal fade' >
                         <Modal isOpen={showAddForm} style={customStyles}>
                             
-                             <form className='form' id="newAcctForm" onSubmit={this.addProduct}>
+                             <form className='form' id="newAcctForm" onSubmit={this.addAccount}>
                                 <div className='form-group row'>
                                     <label>Account Number:</label>
                                     <input className='form-control' type='number' ref={acctNum => this.acctNum = acctNum}/>
@@ -238,11 +239,11 @@ class Accounts extends Component {
                     <div className='modal fade' >
                         <Modal isOpen={showEditForm} style={customStyles}>
                             
-                            <form className='form' id="editAcctForm" onSubmit={this.editProduct}>
+                            <form className='form' id="editAcctForm" onSubmit={this.editAccount}>
                                 
                                 <div className='form-group row'>
                                     <label>Account Number:</label>
-                                    <input className='form-control' type='number' placeholder={this.state.selectedAcct.data.acctNum} ref={acctNum => this.acctNum = acctNum}/>
+                                    <input className='form-control' type='text' placeholder={this.state.selectedAcct.data.acctNum} ref={acctNum => this.acctNum = acctNum}/>
                                 </div>
                                 
                                 <div className='form-group row'>
@@ -298,7 +299,7 @@ class Accounts extends Component {
                         <Modal isOpen={showDeleteForm} style={customStyles}>
                             <form className='form' id="deleteAccountForm">
                                 <div className='form-group'>
-                                    <h2 className='text-danger'>Please confirm that you would like to delete: {this.state.selectedAcct.data.name}</h2>
+                                    <h2 className='text-danger'>Please confirm that you would like to delete: {this.state.selectedName}</h2>
                                 </div>
                                 <div className='form-group row justify-content-md-center'>
                                     <button className='btn  btn-danger' onClick={this.deleteAccount} type='button'>Confirm</button> 
