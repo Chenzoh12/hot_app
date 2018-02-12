@@ -15,7 +15,7 @@ const customStyles = {
   }
 };
 
-class Inventory extends Component { 
+class Accounts extends Component { 
     constructor(props) {
         super(props);
         
@@ -101,8 +101,12 @@ class Inventory extends Component {
     }
     
     handleAcctClick(account){
-        console.log('selected: ' + account.data.name);
-        this.setState({selectedAcct: account, showEditBtns: true});
+        let name = ''
+        this.state.selectedAcct ? name = account.data.name : '';
+        
+        this.setState({selectedAcct: account,  selectedName: name, showEditBtns: true});
+        
+        console.log('selected: ' + name);
     }
     
     handleCancel(){
@@ -111,7 +115,8 @@ class Inventory extends Component {
             showEditForm: false,
             showDeleteForm: false,
             selectedAcct: {},
-            showEditBtns: false
+            showEditBtns: false,
+            selectedName: null
         });
     }
     
@@ -129,7 +134,7 @@ class Inventory extends Component {
             freq: this.freq.value ? this.freq.value : this.state.selectedAcct.data.freq,
         });
         
-        this.setState({ showEditForm: false, selectedAcct: {}, showEditBtns: false }); 
+        this.setState({ showEditForm: false, selectedAcct: {}, selectedName: null, showEditBtns: false }); 
         document.getElementById("editAcctForm").reset(); 
     }
     
@@ -138,7 +143,7 @@ class Inventory extends Component {
         
         fire.database().ref('accounts/' + this.state.selectedAcct.id).remove();
         
-        this.setState({ showDeleteForm: false, selectedAcct: {}, showEditBtns: false }); 
+        this.setState({ showDeleteForm: false, selectedAcct: {}, selectedName: null, showEditBtns: false }); 
     }
     
     render() {
@@ -154,8 +159,8 @@ class Inventory extends Component {
                     <h1 className="h2">Account Management</h1>
                     <div className="btn-toolbar mb-2 mb-md-0">
                         { showEditBtns ?
-                        <div>
-                            <h4>Selected: <b>{this.state.selectedAcct.data.name}</b></h4>
+                        <div className='btn-group'>
+                            <h4 className='text-muted' >Selected: <b>[ {this.state.selectedName} ]</b></h4>
                         </div>
                         : null
                         }
@@ -169,7 +174,7 @@ class Inventory extends Component {
                         }
                         
                         <div className="btn-group mr-2">
-                            <button className='btn btn-outline-success' data-toggle="modal" onClick={() => this.setState({ showAddForm: true })}>Add Product</button>
+                            <button className='btn btn-outline-success' data-toggle="modal" onClick={() => this.setState({ showAddForm: true })}>New Account</button>
                         </div>
                     </div>
                 </div>
@@ -218,7 +223,7 @@ class Inventory extends Component {
                                     <input className='form-control' type='number' ref={freq => this.freq = freq}/> <br/>
                                 </div>
                                 
-                                <div className='form-group row'>
+                                <div className='form-group row justify-content-md-center'>
                                     <button type='submit' className='btn btn-success'>Submit</button>
                                     <button className='btn btn-danger'onClick={this.handleCancel}>Cancel</button>
                                 </div>
@@ -275,7 +280,7 @@ class Inventory extends Component {
                                     <input className='form-control' type='number' placeholder={this.state.selectedAcct.data.freq} ref={freq => this.freq = freq}/> <br/>
                                 </div>
                                 
-                                <div className='form-group row'>
+                                <div className='form-group row justify-content-md-center'>
                                     <button type='submit' className='btn btn-success'>Submit</button>
                                     <button className='btn btn-danger'onClick={this.handleCancel}>Cancel</button>
                                 </div>
@@ -291,9 +296,9 @@ class Inventory extends Component {
                     { showDeleteForm ? 
                     <div className='modal fade' >
                         <Modal isOpen={showDeleteForm} style={customStyles}>
-                            <form id="deleteAccountForm">
-                                <div className='form-group row'>
-                                    <h2>Please confirm that you would like to delete: {this.state.selectedAcct.data.name}</h2>
+                            <form className='form' id="deleteAccountForm">
+                                <div className='form-group'>
+                                    <h2 className='text-danger'>Please confirm that you would like to delete: {this.state.selectedAcct.data.name}</h2>
                                 </div>
                                 <div className='form-group row justify-content-md-center'>
                                     <button className='btn  btn-danger' onClick={this.deleteAccount} type='button'>Confirm</button> 
@@ -344,4 +349,4 @@ class Inventory extends Component {
         );
     }
 }
-export default Inventory;
+export default Accounts;

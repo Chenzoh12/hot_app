@@ -2,11 +2,22 @@ import React, { Component } from 'react';
 import fire from './fire';
 // eslint-disable-next-line
 import _ from 'lodash';
+import Modal from 'react-modal'
+
+const customStyles = {
+    content : {
+        top                   : '50%',
+        left                  : '50%',
+        right                 : 'auto',
+        bottom                : 'auto',
+        marginRight           : '-50%',
+        transform             : 'translate(-50%, -50%)'
+    }
+};
 
 class Inventory extends Component { 
     constructor(props) {
         super(props);
-        
         //Create reference to inventory db
         this.inventory = fire.database().ref('inventory');
         
@@ -17,7 +28,8 @@ class Inventory extends Component {
             showEditForm: false,
             showDeleteForm: false,
             selectedProduct: {},
-            showEditBtns: false
+            showEditBtns: false,
+            selectedName: null
         };
         
         //Either bind here on when linking for form this. EX: add.product.bind(this)
@@ -87,8 +99,12 @@ class Inventory extends Component {
     }
     
     handleProductClick(product){
-        console.log('selected: ' + product.data.name);
-        this.setState({selectedProduct: product, showEditBtns: true, activeRow: product.id});
+        let name = '';
+        this.state.selectedProduct ? name = product.data.name : '';
+       
+        this.setState({selectedProduct: product, selectedName: name, showEditBtns: true});
+        
+        console.log('selected: ' + name);
     }
     
     handleCancel(){
@@ -97,11 +113,13 @@ class Inventory extends Component {
             showEditForm: false,
             showDeleteForm: false,
             selectedProduct: {},
-            showEditBtns: false
+            showEditBtns: false,
+            selectedName: null
         });
     }
     
     editProduct(e){
+        
         e.preventDefault();
         
         fire.database().ref('inventory/' + this.state.selectedProduct.id).update({ 
@@ -111,16 +129,17 @@ class Inventory extends Component {
             currentQty: this.currentQty.value ? this.currentQty.value : this.state.selectedProduct.data.currentQty,
         });
         
-        this.setState({ showEditForm: false, selectedProduct: {}, showEditBtns: false }); 
-        document.getElementById("editProductForm").reset(); 
+        this.setState({ showEditForm: false, selectedProduct: {}, selectedName: null, showEditBtns: false }); 
+        document.getElementById("editProductForm").reset();
     }
     
     deleteProduct(e){
         e.preventDefault();
         
         fire.database().ref('inventory/' + this.state.selectedProduct.id).remove();
+        this.setState({ showDeleteForm: false, selectedProduct: {}, selectedName: null, showEditBtns: false });
+        document.getElementById("deleteProductForm").reset();
         
-        this.setState({ showDeleteForm: false }); 
     }
     
     render() {
@@ -135,10 +154,13 @@ class Inventory extends Component {
                 <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
                     <h1 className="h2">Inventory</h1>
                     <div className="btn-toolbar mb-2 mb-md-0">
-                        <div className="btn-group mr-2">
-                            <button className='btn btn-outline-success' onClick={() => this.setState({ showAddForm: true })}>Add Product</button>
-                        </div>
-                        
+                            { showEditBtns ?
+                                <div className='btn-group'>
+                                    <h4 className='text-muted'>Selected <b>[ {this.state.selectedName} ]</b></h4>
+                                </div>
+                            : null
+                            }
+                            
                             { showEditBtns ?
                             <div className="btn-group mr-2">
                                 <button className='btn btn-outline-primary' onClick={() => this.setState({ showEditForm: true })}>Edit Product</button>
@@ -146,6 +168,10 @@ class Inventory extends Component {
                             </div>
                                 : null
                             }
+                            
+                        <div className="btn-group mr-2">
+                            <button className='btn btn-outline-success' onClick={() => this.setState({ showAddForm: true })}>Add Product</button>
+                        </div>
                         
                     </div>
                 </div>
@@ -153,34 +179,38 @@ class Inventory extends Component {
                     
                     
                     { showAddForm ?
-                     <form className='form-inline' id="newProductForm" onSubmit={this.addProduct}>
-                        
-                        <div className='form-group'>
-                            <label>Product Name:</label>
-                            <input className='form-control' type='text' ref={name => this.name = name}/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label >Units/Case: </label>
-                            <input className='form-control' type='number' ref={unitsPerCase => this.unitsPerCase = unitsPerCase}/> <br/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label>Critical:</label>    
-                            <input className='form-control' type='number' ref={critical => this.critical = critical}/> <br/>
-                        </div>
-                        
-                        <div className='form-group'>
-                            <label>Initial Count:</label>
-                            <input className='form-control' type='number' ref={currentQty => this.currentQty = currentQty}/> <br/>
-                        </div>
-                        
-                        <div>
-                            <button type='submit' className='btn btn-success'>Submit</button>
-                            <button className='btn btn-danger'onClick={this.handleCancel}>Cancel</button>
-                        </div>
-                        
-                    </form>
+                    <div className='modal fade' > 
+                        <Modal isOpen={showAddForm} style={customStyles}>
+                            <form className='form' id="newProductForm" onSubmit={this.addProduct}>
+                            
+                                <div className='form-group row'>
+                                    <label>Product Name:</label>
+                                    <input className='form-control' type='text' ref={name => this.name = name}/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label >Units/Case: </label>
+                                    <input className='form-control' type='number' ref={unitsPerCase => this.unitsPerCase = unitsPerCase}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Critical:</label>    
+                                    <input className='form-control'  type='number' ref={critical => this.critical = critical}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Initial Count:</label>
+                                    <input className='form-control' type='number' ref={currentQty => this.currentQty = currentQty}/> <br/>
+                                </div>
+                                
+                                <div className='form-group row justify-content-md-center'>
+                                    <button type='submit' className='btn btn-success'>Submit</button>
+                                    <button className='btn btn-danger'onClick={this.handleCancel}>Cancel</button>
+                                </div>
+                            
+                            </form>
+                        </Modal>
+                    </div>
                     
                     
                     // If showAddForm = false hide form
@@ -188,25 +218,55 @@ class Inventory extends Component {
                     }
                     
                     { showEditForm ?
-                    
-                     <form id="editProductForm" onSubmit={this.editProduct}>
-                        Product Name: <input type='text' placeholder={this.state.selectedProduct.data.name} ref={name => this.name = name} /> <br/>
-                        Units/Case: <input type='number' placeholder={this.state.selectedProduct.data.unitsPerCase}  ref={unitsPerCase => this.unitsPerCase = unitsPerCase}/> <br/>
-                        Critical Level:<input type='number' placeholder={this.state.selectedProduct.data.critical} ref={critical => this.critical = critical}/> <br/>
-                        Quantity:<input type='number' placeholder={this.state.selectedProduct.data.currentQty} ref={currentQty => this.currentQty = currentQty}/> <br/>
-                        <button className='btn btn-success'>Submit</button>
-                        <button className='btn btn-danger' onClick={this.handleCancel} type='button'>Cancel</button>
-                    </form>
+                    <div className='modal fade' >
+                        <Modal isOpen={showEditForm} style={customStyles}>
+                        
+                            <form id="editProductForm" className='form'  onSubmit={this.editProduct}>
+                                <div className='form-group row'>
+                                    <label>Product Name:</label> 
+                                    <input className='form-control' type='text' placeholder={this.state.selectedProduct.data.name} ref={name => this.name = name} /> 
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Units/Case:</label> 
+                                    <input className='form-control' type='number' placeholder={this.state.selectedProduct.data.unitsPerCase}  ref={unitsPerCase => this.unitsPerCase = unitsPerCase}/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Critical Level:</label>
+                                    <input className='form-control' type='number' placeholder={this.state.selectedProduct.data.critical} ref={critical => this.critical = critical}/>
+                                </div>
+                                
+                                <div className='form-group row'>
+                                    <label>Quantity:</label>
+                                    <input className='form-control' type='number' placeholder={this.state.selectedProduct.data.currentQty} ref={currentQty => this.currentQty = currentQty}/> 
+                                </div>
+                                
+                                <div className='form-group row justify-content-md-center'>
+                                    <button className='btn btn-success'>Submit</button>
+                                    <button className='btn btn-danger' onClick={this.handleCancel} type='button'>Cancel</button>
+                                </div>
+                            </form>
+                        </Modal>
+                    </div>
                     
                     : null
                     }
                     
                     { showDeleteForm ? 
-                    
-                    <form id="deleteProductForm"> 
-                        <button className='btn btn-danger' onClick={this.deleteProduct} type='button'>Confirm</button> 
-                        <button className='btn btn-outline-secondary' onClick={this.handleCancel} type='button'>Cancel</button> 
-                    </form> 
+                    <div className='modal fade' >
+                        <Modal isOpen={showDeleteForm} style={customStyles}>
+                            <form className='form' id="deleteProductForm">
+                                <div className='form-group'>
+                                    <h3 className='text-danger'> PLEASE CONFIRM THAT YOU WOULD LIKE TO DELETE: <b>[ {this.state.selectedProduct.data.name} ]</b></h3>
+                                </div>
+                                <div className='form-group row justify-content-md-center'>
+                                    <button className='btn btn-lg btn-danger' onClick={this.deleteProduct} type='button'>Confirm</button> 
+                                    <button className='btn btn-lg btn-outline-secondary' onClick={this.handleCancel} type='button'>Cancel</button> 
+                                </div>
+                            </form>
+                        </Modal>
+                    </div>
                     
                     : null
                         
